@@ -6,25 +6,60 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
+#include <getopt.h>
 #include "header.h"
 
-int main() {
+typedef struct Settings_t {
+    int port;
+    const char *dest_foldr;
+} Settings;
+
+
+void parse_settings(int argc, char *argv[], Settings *settings) {
+    struct option long_options[] = {
+            {"port",      required_argument, 0,  'p' },
+            {"folder",    required_argument, 0,  'f' },
+    };
+
+    int index = 0, opt;
+    while ((opt = getopt_long(argc, argv,"p:f:", long_options, &index)) != -1) {
+        switch (opt) {
+            case 'p' :
+                // TODO: use strtol
+                settings->port = atoi(optarg);
+                break;
+            case 'b' :
+                settings->dest_foldr = optarg;
+                break;
+            default:
+                // TODO: handle error
+                break;
+        }
+    }
+}
+
+int main(int argc, char *argv[]) {
+
+    Settings settings = (Settings) {80, "."};
+    parse_settings(argc, argv, &settings);
+
     struct sockaddr_in addr;
     inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
     addr.sin_family = AF_INET;
-    addr.sin_port   = htons(1236);
+    addr.sin_port   = htons(settings.port);
 
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
         // TODO: handle error
         return 1;
     }
+
     if (bind(fd, (const struct sockaddr*) &addr, sizeof(addr)) == -1) {
         // TODO: handle error
         return 2;
     }
 
-    if (listen(fd, 8) == -1) {
+    if (listen(fd, 8) == -1) { // TODO: 8 to constant
         // TODO: handle error
         return 3;
     }
