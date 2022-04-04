@@ -1,13 +1,11 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
-#include "header.h"
 #include "settings.h"
+#include "file_receiver.h"
 
 int main(int argc, char *argv[]) {
 
@@ -40,18 +38,9 @@ int main(int argc, char *argv[]) {
         unsigned int addrlen = sizeof(client_addr);
         int connfd = accept(fd, (struct sockaddr*) &client_addr, &addrlen);
         if (connfd == -1) {
-            // TODO: handle error
             continue;
         }
-        char msg[BUFLEN];
-        printf("Accepted connection\n");
-        while (1) {
-            ssize_t n = recv(connfd, msg, BUFLEN, 0);
-            printf("%zd bytes got\n", n);
-            printf("Received message %s from port %d\n", msg, ntohs(client_addr.sin_port));
-            if (!strcmp(msg, "end"))
-                break;
-        }
+        receive_file(connfd, "/Users/ivanvolkov/Desktop/file.txt");
         close(connfd);
     }
     close(fd);

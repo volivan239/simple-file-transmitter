@@ -1,13 +1,11 @@
 #include <stdlib.h>
-#include <stdio.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
-#include "header.h"
 #include "settings.h"
+#include "file_sender.h"
 
 int main(int argc, char *argv[]) {
 
@@ -25,12 +23,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    char buf[BUFLEN];
-    while (1) {
-        scanf("%s", buf);
-        printf("%d %d\n", strlen(buf), send(fd, buf, strlen(buf) + 1, 0));
-        if (!strcmp(buf, "end"))
-            break;
-    }
+    send_file(fd, settings.file_name);
     close(fd);
 }
