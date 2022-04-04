@@ -1,10 +1,6 @@
-//
-// Created by Ivan Volkov on 03/04/2022.
-//
-
 #ifndef FILE_TRANSMITTER_HEADER_H
 #define FILE_TRANSMITTER_HEADER_H
 
-#define BUFLEN 2392
+#define BUFLEN 3000
 
 #endif //FILE_TRANSMITTER_HEADER_H
