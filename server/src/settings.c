@@ -15,7 +15,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 // TODO: use strtol
                 settings->port = atoi(optarg);
                 break;
-            case 'b':
+            case 'f':
                 settings->dest_foldr = optarg;
                 break;
             default:

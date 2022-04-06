@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[]) {
 
-    Settings settings = (Settings) {80, "127.0.0.1", ""};
+    Settings settings = (Settings) {80, "127.0.0.1", "", ""};
     parse_settings(argc, argv, &settings);
 
     struct sockaddr_in serv_addr;
@@ -23,6 +23,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    send_file(fd, settings.file_name);
+    send_file(fd, settings.file_name, settings.serv_file_name);
     close(fd);
 }

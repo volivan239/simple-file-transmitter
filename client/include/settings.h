@@ -5,6 +5,7 @@ typedef struct Settings_t {
     int port;
     const char *host;
     const char *file_name;
+    const char *serv_file_name;
 } Settings;
 
 int parse_settings(int argc, char *argv[], Settings *settings);

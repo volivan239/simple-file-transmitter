@@ -4,8 +4,12 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
+#include <dirent.h>
+#include <sys/errno.h>
+#include <stdio.h>
 #include "settings.h"
 #include "file_receiver.h"
+
 
 int main(int argc, char *argv[]) {
 
@@ -33,6 +37,11 @@ int main(int argc, char *argv[]) {
         return 3;
     }
 
+    if (chdir(settings.dest_foldr)) {
+        printf("Can't open directory %s, terminating", settings.dest_foldr);
+        return 4;
+    }
+
     while (1) {
         struct sockaddr_in client_addr;
         unsigned int addrlen = sizeof(client_addr);
@@ -40,7 +49,7 @@ int main(int argc, char *argv[]) {
         if (connfd == -1) {
             continue;
         }
-        receive_file(connfd, "/Users/ivanvolkov/Desktop/file.txt");
+        receive_file(connfd);
         close(connfd);
     }
     close(fd);
