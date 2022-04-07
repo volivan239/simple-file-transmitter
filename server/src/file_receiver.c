@@ -15,20 +15,19 @@ int receive_file(int fd, char **filename) {
     if (recv(fd, *filename, filename_size + 1, 0) != filename_size + 1)
         return 1;
 
-    char *buf = malloc(file_size + 2);
+    char buf[BUFLEN];
+    FILE *file = fopen(*filename, "wb");
     for (int pos = 0; pos < file_size; pos += BUFLEN) {
         int len = file_size - pos;
         if (len > BUFLEN)
             len = BUFLEN;
-        if (recv(fd, buf + pos, len, 0) != len) {
-            free(buf);
+        if (recv(fd, buf, len, 0) != len) {
+            fclose(file);
             return 1;
         }
+        fwrite(buf, len, 1, file);
     }
 
-    FILE *file = fopen(*filename, "wb");
-    fwrite(buf, file_size, 1, file);
-    free(buf);
     fclose(file);
     return 0;
 }
