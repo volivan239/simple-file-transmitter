@@ -11,15 +11,22 @@ int send_file(int fd, const char *filename, const char *serv_filename) {
     int size = st.st_size;
     int filename_size = strlen(serv_filename);
 
-    send(fd, &filename_size, sizeof(int), 0);
-    send(fd, &size, sizeof(int), 0);
-    send(fd, serv_filename, filename_size + 1, 0);
+    if (send(fd, &filename_size, sizeof(int), 0) != sizeof(int))
+        return 2;
+    if (send(fd, &size, sizeof(int), 0) != sizeof(int))
+        return 2;
+    if (send(fd, serv_filename, filename_size + 1, 0) != filename_size + 1)
+        return 2;
 
     char *buf = malloc(size + 1);
     FILE *file = fopen(filename, "rb");
-    fread(buf, size, 1, file);
-    send(fd, buf, size, 0);
-
+    if (!file || fread(buf, size, 1, file) != 1) {
+        fclose(file);
+        return 1;
+    }
     fclose(file);
+    if (send(fd, buf, size, 0) != size) {
+        return 2;
+    }
     return 0;
 }

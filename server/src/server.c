@@ -13,7 +13,7 @@
 
 int main(int argc, char *argv[]) {
 
-    Settings settings = (Settings) {80, "."};
+    Settings settings = (Settings) {5679, "."};
     parse_settings(argc, argv, &settings);
 
     struct sockaddr_in addr;
@@ -42,14 +42,22 @@ int main(int argc, char *argv[]) {
         return 4;
     }
 
+    struct sockaddr_in client_addr;
+    unsigned int addrlen = sizeof(client_addr);
+    char addr_ip[INET_ADDRSTRLEN];
     while (1) {
-        struct sockaddr_in client_addr;
-        unsigned int addrlen = sizeof(client_addr);
         int connfd = accept(fd, (struct sockaddr*) &client_addr, &addrlen);
-        if (connfd == -1) {
+        if (connfd == -1)
             continue;
+
+        inet_ntop(AF_INET, &client_addr.sin_addr, addr_ip, INET_ADDRSTRLEN);
+        char *filename = NULL;
+        if (receive_file(connfd, &filename)) {
+            printf("Error while receiving file from %s\n", addr_ip);
+        } else {
+            printf("Successfully received file %s from %s\n", filename, addr_ip);
         }
-        receive_file(connfd);
+        free(filename);
         close(connfd);
     }
     close(fd);
