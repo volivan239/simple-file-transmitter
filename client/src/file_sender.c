@@ -22,11 +22,14 @@ int send_file(int fd, const char *filename, const char *serv_filename) {
     FILE *file = fopen(filename, "rb");
     if (!file || fread(buf, size, 1, file) != 1) {
         fclose(file);
+        free(buf);
         return 1;
     }
     fclose(file);
     if (send(fd, buf, size, 0) != size) {
+        free(buf);
         return 2;
     }
+    free(buf);
     return 0;
 }

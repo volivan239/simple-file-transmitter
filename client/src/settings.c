@@ -23,7 +23,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 settings->host = optarg;
                 break;
             case 'f':
-                settings->serv_file_name = optarg;
+                strcpy(settings->serv_file_name, optarg);
                 break;
             default:
                 // TODO: handle error
@@ -35,12 +35,9 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
         return -1;
     }
 
-    settings->file_name = argv[optind];
-    if (!strcmp(settings->serv_file_name, "")) {
-        char *serv_file_name = malloc(MAXPATHLEN);
-        basename_r(settings->file_name, serv_file_name);
-        settings->serv_file_name = serv_file_name;
-    }
+    strcpy(settings->file_name, argv[optind]);
+    if (!strcmp(settings->serv_file_name, ""))
+        basename_r(settings->file_name, settings->serv_file_name);
 
     return 0;
 }

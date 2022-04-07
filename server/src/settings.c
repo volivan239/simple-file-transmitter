@@ -1,5 +1,6 @@
 #include <getopt.h>
 #include <stdlib.h>
+#include <string.h>
 #include "settings.h"
 
 int parse_settings(int argc, char *argv[], Settings *settings) {
@@ -16,7 +17,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 settings->port = atoi(optarg);
                 break;
             case 'f':
-                settings->dest_foldr = optarg;
+                strcpy(settings->dest_foldr, optarg);
                 break;
             default:
                 // TODO: handle error
