@@ -11,7 +11,10 @@
 int main(int argc, char *argv[]) {
 
     Settings settings = (Settings) {5679, "127.0.0.1", "", ""};
-    parse_settings(argc, argv, &settings);
+    if (parse_settings(argc, argv, &settings)) {
+        printf("Error while parsing arguments!");
+        return -1;
+    }
 
     struct sockaddr_in serv_addr;
     inet_pton(AF_INET, settings.host, &serv_addr.sin_addr);
@@ -28,6 +31,8 @@ int main(int argc, char *argv[]) {
         close(fd);
         return 2;
     }
+
+    printf("Filename: %s\n", settings.file_name);
 
     int code = send_file(fd, settings.file_name, settings.serv_file_name);
     switch (code) {

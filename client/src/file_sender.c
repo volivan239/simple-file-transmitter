@@ -3,11 +3,14 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/errno.h>
 #include "file_sender.h"
+#include "shared_constants.h"
 
 int send_file(int fd, const char *filename, const char *serv_filename) {
     struct stat st;
-    stat(filename, &st);
+    if (stat(filename, &st))
+        return 1;
     int size = st.st_size;
     int filename_size = strlen(serv_filename);
 
@@ -26,9 +29,15 @@ int send_file(int fd, const char *filename, const char *serv_filename) {
         return 1;
     }
     fclose(file);
-    if (send(fd, buf, size, 0) != size) {
-        free(buf);
-        return 2;
+
+    for (int pos = 0; pos < size; pos += BUFLEN) {
+        int len = size - pos;
+        if (len > BUFLEN)
+            len = BUFLEN;
+        if (send(fd, buf + pos, len, 0) != len) {
+            free(buf);
+            return 2;
+        }
     }
     free(buf);
     return 0;

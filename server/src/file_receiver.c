@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "file_receiver.h"
+#include "shared_constants.h"
 
 int receive_file(int fd, char **filename) {
     int filename_size, file_size;
@@ -15,9 +16,14 @@ int receive_file(int fd, char **filename) {
         return 1;
 
     char *buf = malloc(file_size + 2);
-    if (recv(fd, buf, file_size, 0) != file_size) {
-        free(buf);
-        return 1;
+    for (int pos = 0; pos < file_size; pos += BUFLEN) {
+        int len = file_size - pos;
+        if (len > BUFLEN)
+            len = BUFLEN;
+        if (recv(fd, buf + pos, len, 0) != len) {
+            free(buf);
+            return 1;
+        }
     }
 
     FILE *file = fopen(*filename, "wb");
