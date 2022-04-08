@@ -5,6 +5,6 @@ typedef enum message_type_t {
     INFO, WARN, ERROR
 } message_type;
 
-void log(message_type t, const char *msg_fmt, ...);
+void log_msg(message_type t, const char *msg_fmt, ...);
 
 #endif //FILE_TRANSMITTER_LOGGER_H

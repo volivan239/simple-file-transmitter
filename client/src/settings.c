@@ -16,8 +16,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
     while ((opt = getopt_long(argc, argv,"h:p:n:", long_options, &index)) != -1) {
         switch (opt) {
             case 'p':
-                // TODO: use strtol
-                settings->port = atoi(optarg);
+                settings->port = (int) strtol(optarg, NULL, 0);
                 break;
             case 'h':
                 settings->host = optarg;
@@ -26,12 +25,12 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 strcpy(settings->serv_file_name, optarg);
                 break;
             default:
-                log(ERROR, "Unexpected argument: %s, skipping", opt);
+                log_msg(ERROR, "Unexpected argument: %s, skipping", opt);
                 return -1;
         }
     }
     if (argc - optind != 1) {
-        log(ERROR, "Expected exactly 1 non-optional argument, but %d got", argc - optind);
+        log_msg(ERROR, "Expected exactly 1 non-optional argument, but %d got", argc - optind);
         return -1;
     }
 

@@ -5,7 +5,7 @@
 
 static const char *message_type_names[] = {"INFO", "WARN", "ERROR"};
 
-void log(message_type t, const char *msg_fmt, ...) {
+void log_msg(message_type t, const char *msg_fmt, ...) {
     time_t now;
     time(&now);
 

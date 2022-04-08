@@ -14,14 +14,13 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
     while ((opt = getopt_long(argc, argv,"p:f:", long_options, &index)) != -1) {
         switch (opt) {
             case 'p':
-                // TODO: use strtol
-                settings->port = atoi(optarg);
+                settings->port = (int) strtol(optarg, NULL, 0);
                 break;
             case 'f':
                 strcpy(settings->dest_foldr, optarg);
                 break;
             default:
-                log(ERROR, "Unexpected argument: %s, skipping", opt);
+                log_msg(ERROR, "Unexpected argument: %s, skipping", opt);
                 return -1;
         }
     }

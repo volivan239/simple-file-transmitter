@@ -26,26 +26,26 @@ int main(int argc, char *argv[]) {
 
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
-        log(ERROR, error_fmt, "socket()", errno);
+        log_msg(ERROR, error_fmt, "socket()", errno);
         return 1;
     }
 
     if (bind(fd, (const struct sockaddr*) &addr, sizeof(addr)) == -1) {
-        log(ERROR, error_fmt, "bind()", errno);
+        log_msg(ERROR, error_fmt, "bind()", errno);
         return 1;
     }
 
     if (listen(fd, BACKLOG) == -1) {
-        log(ERROR, error_fmt, "listen()", errno);
+        log_msg(ERROR, error_fmt, "listen()", errno);
         return 1;
     }
 
     if (chdir(settings.dest_foldr)) {
-        log(ERROR, "Can't open directory %s, terminating\n", settings.dest_foldr);
+        log_msg(ERROR, "Can't open directory %s, terminating\n", settings.dest_foldr);
         return 2;
     }
 
-    log(INFO, "Stared listening on port %d", settings.port);
+    log_msg(INFO, "Stared listening on port %d", settings.port);
     struct sockaddr_in client_addr;
     unsigned int addrlen = sizeof(client_addr);
     char addr_ip[INET_ADDRSTRLEN];
@@ -57,9 +57,9 @@ int main(int argc, char *argv[]) {
         inet_ntop(AF_INET, &client_addr.sin_addr, addr_ip, INET_ADDRSTRLEN);
         char *filename = NULL;
         if (receive_file(connfd, &filename)) {
-            log(WARN, "Receiving file from %s failed!\n", addr_ip);
+            log_msg(WARN, "Receiving file from %s failed!\n", addr_ip);
         } else {
-            log(INFO, "Successfully received file %s from %s\n", filename, addr_ip);
+            log_msg(INFO, "Successfully received file %s from %s\n", filename, addr_ip);
         }
         free(filename);
         close(connfd);
