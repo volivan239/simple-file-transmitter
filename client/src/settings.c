@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
-#include <sys/param.h>
 #include "settings.h"
+#include "logger.h"
 
 int parse_settings(int argc, char *argv[], Settings *settings) {
     struct option long_options[] = {
@@ -26,12 +26,12 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 strcpy(settings->serv_file_name, optarg);
                 break;
             default:
-                // TODO: handle error
-                break;
+                log(ERROR, "Unexpected argument: %s, skipping", opt);
+                return -1;
         }
     }
-    if (optind != argc - 1) {
-        // TODO: handle error
+    if (argc - optind != 1) {
+        log(ERROR, "Expected exactly 1 non-optional argument, but %d got", argc - optind);
         return -1;
     }
 

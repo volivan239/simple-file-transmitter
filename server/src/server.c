@@ -5,43 +5,47 @@
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <sys/errno.h>
-#include <stdio.h>
+#include <errno.h>
 #include "settings.h"
 #include "file_receiver.h"
-
+#include "logger.h"
+#define BACKLOG 8
 
 int main(int argc, char *argv[]) {
 
     Settings settings = (Settings) {5679, "."};
-    parse_settings(argc, argv, &settings);
+    if (parse_settings(argc, argv, &settings))
+        return -1;
 
     struct sockaddr_in addr;
     inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
     addr.sin_family = AF_INET;
     addr.sin_port   = htons(settings.port);
 
+    const char *error_fmt = "Error while trying to launch server: %s returned -1 with errno=%d, terminating\n";
+
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
-        // TODO: handle error
+        log(ERROR, error_fmt, "socket()", errno);
         return 1;
     }
 
     if (bind(fd, (const struct sockaddr*) &addr, sizeof(addr)) == -1) {
-        // TODO: handle error
-        return 2;
+        log(ERROR, error_fmt, "bind()", errno);
+        return 1;
     }
 
-    if (listen(fd, 8) == -1) { // TODO: 8 to constant
-        // TODO: handle error
-        return 3;
+    if (listen(fd, BACKLOG) == -1) {
+        log(ERROR, error_fmt, "listen()", errno);
+        return 1;
     }
 
     if (chdir(settings.dest_foldr)) {
-        printf("Can't open directory %s, terminating", settings.dest_foldr);
-        return 4;
+        log(ERROR, "Can't open directory %s, terminating\n", settings.dest_foldr);
+        return 2;
     }
 
+    log(INFO, "Stared listening on port %d", settings.port);
     struct sockaddr_in client_addr;
     unsigned int addrlen = sizeof(client_addr);
     char addr_ip[INET_ADDRSTRLEN];
@@ -53,9 +57,9 @@ int main(int argc, char *argv[]) {
         inet_ntop(AF_INET, &client_addr.sin_addr, addr_ip, INET_ADDRSTRLEN);
         char *filename = NULL;
         if (receive_file(connfd, &filename)) {
-            printf("Error while receiving file from %s\n", addr_ip);
+            log(WARN, "Receiving file from %s failed!\n", addr_ip);
         } else {
-            printf("Successfully received file %s from %s\n", filename, addr_ip);
+            log(INFO, "Successfully received file %s from %s\n", filename, addr_ip);
         }
         free(filename);
         close(connfd);

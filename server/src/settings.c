@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "settings.h"
+#include "logger.h"
 
 int parse_settings(int argc, char *argv[], Settings *settings) {
     struct option long_options[] = {
@@ -20,8 +21,8 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 strcpy(settings->dest_foldr, optarg);
                 break;
             default:
-                // TODO: handle error
-                break;
+                log(ERROR, "Unexpected argument: %s, skipping", opt);
+                return -1;
         }
     }
     return 0;
