@@ -20,7 +20,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
                 strcpy(settings->dest_foldr, optarg);
                 break;
             default:
-                log_msg(ERROR, "Unexpected argument: %s, skipping", opt);
+                log_msg(ERROR, "Unexpected argument: %s, terminating", opt);
                 return -1;
         }
     }

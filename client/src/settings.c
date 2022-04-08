@@ -13,7 +13,7 @@ int parse_settings(int argc, char *argv[], Settings *settings) {
     };
 
     int index = 0, opt;
-    while ((opt = getopt_long(argc, argv,"h:p:n:", long_options, &index)) != -1) {
+    while ((opt = getopt_long(argc, argv,"h:p:f:", long_options, &index)) != -1) {
         switch (opt) {
             case 'p':
                 settings->port = (int) strtol(optarg, NULL, 0);
