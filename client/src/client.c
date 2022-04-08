@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port   = htons(settings.port);
 
-    const char *error_fmt = "Error while trying to establish connection with server: %s returned -1 with errno=%d, terminating\n";
+    const char *error_fmt = "Error while trying to establish connection with server: %s returned -1 with errno=%d, terminating";
 
     int fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1) {
@@ -33,16 +33,18 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    log_msg(INFO, "Successfully connected to server");
+
     int code = send_file(fd, settings.file_name, settings.serv_file_name);
     switch (code) {
         case 0:
-            log_msg(INFO, "Successfully sent file to server!\n");
+            log_msg(INFO, "Successfully sent file to server!");
             break;
         case 1:
-            log_msg(INFO, "Error while reading file\n");
+            log_msg(INFO, "Error while reading file");
             break;
         default:
-            log_msg(INFO, "Error while sending file\n");
+            log_msg(INFO, "Error while sending file");
             break;
     }
     close(fd);
